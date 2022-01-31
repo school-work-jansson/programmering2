@@ -2,14 +2,17 @@ from cmu_graphics import *
 
 ### your code
 def getData():
-    
     pass
     
 
 def main():
-    xData, yData = getData()
-    manager.plotLines(xData, yData, color='steelBlue')
-    manager.updateRanges(xMin=0)
+    #xData, yData = getData()
+    #manager.plotLines(xData, yData, color='steelBlue')
+    #manager.updateRanges(xMin=0)
+
+    get_data()
+
+
 
 class PlotManager(object):
     def __init__(self, left=85, bottom=345, width=300, height=300, title='', xLabel='', yLabel=''):
@@ -347,8 +350,20 @@ manager = PlotManager(left=60, bottom=350, width=300, height=300,
 # Source:
 #   https://www.stat.cmu.edu/~larry/all-of-statistics/=data/faithful.dat
 #   https://gist.github.com/curran/4b59d1046d9e66f2787780ad51a1cd87
-app.data = """
+def get_data():
+    
+    with open('BTC-USD.csv', 'r') as data_file: 
+        lines = data_file.readlines()
 
-"""
+        lines.pop(0)
+
+
+    for line in lines:
+        pass
+
+def process_data():
+    pass
+
+main()
 
 cmu_graphics.run()
