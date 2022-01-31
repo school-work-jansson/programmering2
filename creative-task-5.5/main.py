@@ -407,10 +407,6 @@ def handle_data_two(data):
     return xData, yData
     
 
-    
-
-
-
 main()
 
 cmu_graphics.run()
