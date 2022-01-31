@@ -1,5 +1,7 @@
 from cmu_graphics import *
 
+app.data = []
+
 ### your code
 def getData():
     pass
@@ -8,10 +10,12 @@ def getData():
 def main():
     #xData, yData = getData()
     #manager.plotLines(xData, yData, color='steelBlue')
-    #manager.updateRanges(xMin=0)
 
-    get_data()
-
+    # print(get_data())
+    xData, yData = handle_data_two(get_data())
+    print(xData, yData)
+    manager.plotLines(range(len(xData)), yData, color='steelBlue')
+    manager.drawTicks(xLabels=xData,)
 
 
 class PlotManager(object):
@@ -343,26 +347,69 @@ class Plot(object):
             prevXVal, prevYVal = self.drawDatapoint(xVal, yVal, prevXVal, prevYVal, color)
 
 manager = PlotManager(left=60, bottom=350, width=300, height=300,
-                      title='Bitcoin price',
-                      xLabel='Eruption Length (min)',
-                      yLabel='Eruption Wait (min)')
+                      title='Bitcoin price (February 2021 - January 2022)',
+                      xLabel='Date',
+                      yLabel='Price (Thousands)')
 
 # Source:
-#   https://www.stat.cmu.edu/~larry/all-of-statistics/=data/faithful.dat
-#   https://gist.github.com/curran/4b59d1046d9e66f2787780ad51a1cd87
+#   https://finance.yahoo.com/quote/BTC-USD/history?p=BTC-USD
 def get_data():
     
     with open('BTC-USD.csv', 'r') as data_file: 
+        # price_tmp = []
         lines = data_file.readlines()
-
+        data = []
+        # remove first line of csv file (header)
         lines.pop(0)
 
+        for line in lines:
+            line.replace('\n', '')
 
-    for line in lines:
-        pass
+            date, _, _, _, close, _, _ = line.split(',')
+            data.append([date, close])
 
-def process_data():
-    pass
+        return data
+
+# def handle_data(data):
+#     tmp_dict = {}
+#     # Sorting every month into dict of prices that month with year_month as key
+#     for date, price in data:
+#         year, month, day = date.split('-')
+#         year_month = int(f"{year[2:]}{month}")
+#         if year_month not in tmp_dict:
+#             tmp_dict[year_month] = [float(price)]
+#         else:
+#             tmp_dict[year_month].append(float(price))
+
+#     # For every month get the month mean and then putting it into a list with [month, price]
+#     xData = []
+#     yData = []
+#     for key, value in tmp_dict.items():
+#         mean = find_mean(value) / 1000
+#         # mean_rounded = rounded(mean, 2)
+#         xData.append(key)
+#         yData.append(mean)
+    
+#     return xData, yData
+
+def handle_data_two(data):
+    import datetime
+    xData = []
+    yData = []
+    for date, price in data:
+        year, month, day = date.split('-')
+        year_month_day = f"{year[2:]}{month}{day}"
+        xData.append(year_month_day)
+        price_in_thousands = float(price) // 1000
+        yData.append(price_in_thousands)
+        
+
+    return xData, yData
+    
+
+    
+
+
 
 main()
 
