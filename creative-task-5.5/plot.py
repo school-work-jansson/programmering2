@@ -1,3 +1,4 @@
+from cmu_graphics import *
 class PlotManager(object):
     def __init__(self, left=85, bottom=345, width=300, height=300, title='', xLabel='', yLabel=''):
         self.left = left
