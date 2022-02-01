@@ -1,12 +1,5 @@
 from cmu_graphics import *
 
-def main():
-    xData, yData = process_data(load_data())
-
-    minY = min(yData)
-    manager.plotLines(range(len(xData)), yData, color='steelBlue')
-    manager.updateRanges(yMin=(minY / 2),)
-
 
 class PlotManager(object):
     def __init__(self, left=85, bottom=345, width=300, height=300, title='', xLabel='', yLabel=''):
@@ -336,11 +329,6 @@ class Plot(object):
             color = self.getDatapointColor(index)
             prevXVal, prevYVal = self.drawDatapoint(xVal, yVal, prevXVal, prevYVal, color)
 
-manager = PlotManager(left=60, bottom=350, width=300, height=300,
-                      title='Bitcoin price (February 1 2021 - January 31 2022)',
-                      xLabel='Day',
-                      yLabel='Price (Thousands)')
-
 # Source:
 #   https://finance.yahoo.com/quote/BTC-USD/history?p=BTC-USD
 def load_data():
@@ -375,6 +363,18 @@ def process_data(data):
         
     return xData, yData
     
+def main():
+    manager = PlotManager(left=60, bottom=350, width=300, height=300,
+                        title='Bitcoin price (February 1 2021 - January 31 2022)',
+                        xLabel='Day',
+                        yLabel='Price (Thousands)')
+
+    xData, yData = process_data(load_data())
+
+    minY = min(yData)
+    manager.plotLines(range(len(xData)), yData, color='steelBlue')
+    manager.updateRanges(yMin=(minY / 2),)
+
 
 main()
 
