@@ -333,19 +333,19 @@ class Plot(object):
 def load_data():
     
     with open('BTC-USD.csv', 'r') as data_file: 
-        # price_tmp = []
         lines = data_file.readlines()
-        data = []
-        # remove first line of csv file (header)
-        lines.pop(0)
+    
+    data = []
+    # remove first line of csv file (header)
+    lines.pop(0)
 
-        for line in lines:
-            line.replace('\n', '')
+    for line in lines:
+        line.replace('\n', '')
 
-            date, _, _, _, close, _, _ = line.split(',')
-            data.append([date, close])
+        date, _, _, _, close, _, _ = line.split(',')
+        data.append([date, close])
 
-        return data
+    return data
 
 def process_data(data):
     xData = []
