@@ -155,7 +155,7 @@ def main():
 
     manager.plotPoints(xData, yData, color='dodgerBlue')
     app.networkPlot = manager.plotLines([ ], [ ])
-    manager.updateRanges(xMin=0, xMax=100, yMin=25000, yMax=50000)
+    manager.updateRanges(xMin=0, xMax=100, yMin=25, yMax=50)
 
 class PlotManager(object):
     def __init__(self, left=85, bottom=345, width=300, height=300, title='', xLabel='', yLabel=''):
@@ -495,11 +495,11 @@ def import_data():
         rows_mem = list(csv_reader)
 
         for row in reversed(rows_mem):
-            if day == 100:
+            if day >= 100:
                 break
             else:
                 print(row["Date"], row["Close"])
-                price = float(row["Close"])
+                price = rounded(float(row["Close"])) / 1000
                 
                 if price <= 0:
                     price = -1
@@ -515,7 +515,7 @@ def import_data():
     print(app.data)
 
 
-manager = PlotManager(left=50, bottom=350, width=300, height=300, title='Bitcoin price the last 100 days (USD)', xLabel="days from start", yLabel="Price")
+manager = PlotManager(left=50, bottom=350, width=300, height=300, title='BTC price the last 100 days (USD) in thousands', xLabel="Duration of 100 days", yLabel="Price")
 
 network = NeuralNetwork(1,  [ 3, 2 ])
 
