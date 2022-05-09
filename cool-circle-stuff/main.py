@@ -1,6 +1,9 @@
 # Creating on Github
 # github.com/school-work-jansson/programmering2
-Label("CODE IS ON GITHUB", 200, 200, size=25)
+from cmu_graphics import *
+
+app.background = "black"
+Label("CODE IS ON GITHUB", 200, 200, size=25, fill="red", bold=True)
 
 class SpecialCircle():
     def __init__(self):
@@ -9,7 +12,7 @@ class SpecialCircle():
         self.dx, self.dy = 1, randrange(1, 100) / 100   
         self.opacity = randrange(0, 50)
         
-        self.drawing = Circle(self.xPos, self.yPos, self.r, opacity=self.opacity)
+        self.drawing = Circle(self.xPos, self.yPos, self.r, opacity=self.opacity, fill="white")
     
     def move(self):
         if self.drawing.centerY >= 400:
@@ -30,4 +33,6 @@ def main():
     
 
 main()
-    
+
+cmu_graphics.run()
+
