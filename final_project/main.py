@@ -33,8 +33,10 @@ class SpecialObject(object):
         
         return x, y, distance
         
+        
     def directionToObject(self, obj):
-        # Calculating the direction to a object
+        # Calculating the direction to a object 
+        # Used to move enemey towards player
         # ref: https://stackoverflow.com/questions/2625021/game-enemy-move-towards-player
 
         x, y, distance = self.distanceTo(obj)
