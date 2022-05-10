@@ -3,9 +3,9 @@ from cmu_graphics import *
 # Fill me in!
 
 class SpecialObject(object):
-    def __init__(self, w, h, xPos=None, yPos=None, drawing=None):
-        self.w = w or 50
-        self.h = h or 50
+    def __init__(self, w=None, h=None, xPos=None, yPos=None, drawing=None):
+        self.w = w if w is not None else 25
+        self.h = h if h is not None else 25
         
         # Prevent the object from going outside of borders
         self.xPos = xPos if xPos is not None else randrange(0 + self.w, 400 - self.w)
@@ -15,30 +15,29 @@ class SpecialObject(object):
         self.speedY = 2.5
 
         self.drawing = drawing
-        
-        # print(self.xPos, self.yPos, self.w, self.h)
 
-    def draw(self):
-        self.drawing = self.drawing
+
+    def update(self):
+        self.drawing.centerX = self.xPos
+        self.drawing.centerY = self.yPos
+
 
     def distanceTo(self, obj):
-        a = (self.xPos - obj.xPos)
-        b = (self.yPos - obj.yPos)
+        x = (self.xPos - obj.xPos)
+        y = (self.yPos - obj.yPos)
         
-        distance = (a**2 + b**2) ** 0.5
+        distance = (x**2 + y**2) ** 0.5
         
-        return a, b, distance
+        return x, y, distance
+        
+    def directionToObject(self, obj):
+        x, y, distance = self.distanceTo(obj)
+        x /= distance
+        y /= distance
 
-        
-    def distanceToObject(self, obj):
-        a, b, distance = self.distanceTo(obj)
-        a /= distance
-        b /= distance
-
-        direction = (a, b)
+        direction = (x, y)
         
         return direction
-        
 
 class Player(SpecialObject):
     def __init__(self, startX=None, startY=None):
@@ -57,7 +56,7 @@ class Player(SpecialObject):
 
         super().__init__(self.w, self.h, xPos=startX, yPos=startY, drawing=drawing)
 
-        self.draw()
+        self.update()
             
         
             
@@ -78,6 +77,8 @@ class Player(SpecialObject):
         elif self.yPos <= 0:
             self.yPos = 400 - self.h
 
+        self.update()
+
 
     
 class Enemey(SpecialObject):
@@ -96,42 +97,47 @@ class Enemey(SpecialObject):
 
         super().__init__(self.w, self.h, xPos=startX, yPos=startY, drawing=drawing)
         
-        self.draw()
+        self.update()
         
     
     def move(self, distRef, enemies):
 
-        distX, distY = self.distanceToObject(distRef)
+        distX, distY = self.directionToObject(distRef)
 
         # add when hitting corner change dir to the player position
-        if self.xPos + self.w >= 400:
+        if self.xPos > 400 - self.w:
             self.speedX *= -1
         
-        elif self.xPos - self.w <= 0:
+        elif self.xPos < 0 + self.w:
             self.speedX *= -1
             
-        if self.yPos + self.h >= 400:
+        if self.yPos  > 400 - self.h:
             self.speedY *= -1
             
-        elif self.yPos - self.h <= 0:
+        elif self.yPos  < 0 + self.h:
             self.speedY *= -1
-
-
-        # make sure not to collide with other enemies
-        for enemy in enemies:
-            if enemy.drawing != self.drawing:
-                x, y, _ = self.distanceTo(enemy)
-
-                if enemy.drawing.hitsShape(self.drawing):
-                    self.xPos += x
-                    self.yPos += y
 
         self.xPos += self.speedX * distX
         self.yPos += self.speedY * distY
 
-        self.draw()
+        # make sure not to collide with other enemies
+        # Works but is buggy
+        for enemy in enemies:
+            if enemy.drawing != self.drawing:
+                x_dist, y_dist, _ = self.distanceTo(enemy)
 
-        print(self.xPos, self.yPos)
+                while enemy.drawing.hitsShape(self.drawing):
+                    self.xPos += x_dist
+                    self.yPos += y_dist
+            
+                    self.update()
+
+                
+                print(x_dist, y_dist)
+
+        self.update()
+
+        # print(self.xPos, self.yPos)
 
 def onKeyHold(keys):
     if "W" in keys or "w" in keys:
