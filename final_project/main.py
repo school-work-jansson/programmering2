@@ -174,6 +174,11 @@ class Enemey(SpecialObject):
                     self.speedY *= -1
                     self.speedX *= -1
 
+                    self.xPos += self.speedX + 1
+                    self.yPos += self.speedY + 1
+
+                    self.update()
+
                     # Add delay from moving to player if they collide
                     self.last_hit = time.time()
                 
