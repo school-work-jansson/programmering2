@@ -4,6 +4,7 @@ from cmu_graphics import *
 
 class SpecialObject(object):
     def __init__(self, w=None, h=None, xPos=None, yPos=None, drawing=None):
+        
         self.w = w if w is not None else 25
         self.h = h if h is not None else 25
         
@@ -18,11 +19,13 @@ class SpecialObject(object):
 
 
     def update(self):
+        # Update screen
         self.drawing.centerX = self.xPos
         self.drawing.centerY = self.yPos
 
 
     def distanceTo(self, obj):
+        # Using pythagorean theorem to calculate the distance between two objects
         x = (self.xPos - obj.xPos)
         y = (self.yPos - obj.yPos)
         
@@ -31,6 +34,9 @@ class SpecialObject(object):
         return x, y, distance
         
     def directionToObject(self, obj):
+        # Calculating the direction to a object
+        # ref: https://stackoverflow.com/questions/2625021/game-enemy-move-towards-player
+
         x, y, distance = self.distanceTo(obj)
         x /= distance
         y /= distance
@@ -61,7 +67,7 @@ class Player(SpecialObject):
         
             
     def move(self):
-
+        # Move player towards self.direction
         self.xPos += self.speedX * self.dir[0]
         self.yPos += self.speedY * self.dir[1]
         
@@ -104,7 +110,7 @@ class Enemey(SpecialObject):
 
         distX, distY = self.directionToObject(distRef)
 
-        # add when hitting corner change dir to the player position
+        # Corner colission
         if self.xPos > 400 - self.w:
             self.speedX *= -1
         
@@ -131,13 +137,12 @@ class Enemey(SpecialObject):
                     self.yPos += y_dist
             
                     self.update()
-
                 
-                print(x_dist, y_dist)
+                # Print distance between the enemy
+                # print(x_dist, y_dist)
 
         self.update()
 
-        # print(self.xPos, self.yPos)
 
 def onKeyHold(keys):
     if "W" in keys or "w" in keys:
@@ -152,6 +157,8 @@ def onKeyHold(keys):
     if "A" in keys or "a" in keys:
         app.player.dir[0] = -1
 
+
+
 def onStep():
     
     # app.player.drawing.toFront()
@@ -161,12 +168,15 @@ def onStep():
         enemy.move(app.player, app.enemies)
 
     app.player.move()
-        
 
+
+# Initial start create player instance and enemies
 def main():
     app.player = Player(200, 200)
-    
-    app.enemies = [Enemey(), Enemey()]
+    app.enemies = []
+
+    for i in range(2):
+        app.enemies.append(Enemey())
 
 main()
 
