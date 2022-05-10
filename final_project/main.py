@@ -168,7 +168,7 @@ class Enemey(SpecialObject):
         # make sure not to collide with other enemies
         # Works but is buggy
         for enemy in enemies:
-            # Dont check for it self
+            # Dont check for itself
             if enemy.drawing != self.drawing:
                 if enemy.drawing.hitsShape(self.drawing):
                     self.speedY *= -1
