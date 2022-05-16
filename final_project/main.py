@@ -21,11 +21,17 @@ class SpecialObject(object):
 
         self.angle = 0
 
+        self.update()
+
 
     def update(self):
         # Update screen
         self.drawing.centerX = self.xPos
         self.drawing.centerY = self.yPos
+        
+        if self.angle >= 360:
+            self.angle = 0
+
         self.drawing.rotateAngle = self.angle
 
 
@@ -144,55 +150,49 @@ class Enemey(SpecialObject):
         distX, distY = self.directionToObject(distRef)
         self.angle += 5
 
-
-        # Corner colission
-        if self.xPos > 400 - self.w:
-            self.speedX *= -1
-            self.angle += 45
-        
-        elif self.xPos < 0 + self.w:
-            self.speedX *= -1
-            self.angle += 45
-            
-        if self.yPos  > 400 - self.h:
-            self.speedY *= -1
-            self.angle += 45
-            
-        elif self.yPos  < 0 + self.h:
-            self.speedY *= -1
-            self.angle += 45
-
-
-
-        
         # make sure not to collide with other enemies
-        # Works but is buggy
         for enemy in enemies:
             # Dont check for itself
             if enemy.drawing != self.drawing:
                 if enemy.drawing.hitsShape(self.drawing):
-                    self.speedY *= -1
                     self.speedX *= -1
+                    self.speedY *= -1
 
                     self.xPos += self.speedX + 1
                     self.yPos += self.speedY + 1
 
-                    self.update()
-
                     # Add delay from moving to player if they collide
                     self.last_hit = time.time()
-                
+
+                    self.update()
                 # Print distance between the enemy
-                # print(x_dist, y_dist)
+
+        # if the enemies has hit eachother it shouldnt follow the player for 2 seconds
+        if time.time() - self.last_hit <= 2:
+            tempX = self.xPos + self.speedX
+            tempY = self.yPos + self.speedY
+        else:
+            tempX = self.xPos + self.speedX * distX
+            tempY = self.yPos + self.speedY * distY
+
+
+        if tempX >= 400 - self.w:
+            self.speedX *= -1
+            # self.angle += 45
+        elif tempX <= 0 + self.w:
+            self.speedX *= -1
+            # self.angle += 45
+            
+        if tempY  >= 400 - self.h:
+            self.speedY *= -1
+            # self.angle += 45
+        elif tempY <= 0 + self.h:
+            self.speedY *= -1
+            # self.angle += 45
 
         # Prevent enemey from hitting player if it has collided
-        if time.time() - self.last_hit <= 2:
-            # print("hit timeout", time.time() - self.last_hit)
-            self.xPos += self.speedX
-            self.yPos += self.speedY
-        else:
-            self.xPos += self.speedX * distX
-            self.yPos += self.speedY * distY
+        self.xPos = tempX
+        self.yPos = tempY
 
         self.update()
 
@@ -213,11 +213,34 @@ def onKeyHold(keys):
 
 
 def onStep():
-    
-    # app.player.drawing.toFront()
+    if app.GameOver:
+        return
 
+    # app.player.drawing.toFront()
+    if app.objective.drawing.hitsShape(app.player.drawing):
+        app.score += 1
+
+        app.objective.newPos()
+
+        if app.score % 10 == 0:
+            app.enemies.append(Enemey())
+
+            # for enemy in app.enemies:
+            #     enemy.speedX += 0.5
+            #     enemy.speedY += 0.5
+            #     print(enemy.speedX, enemy.speedY)
+
+            # app.player.speedX += 1awd
+
+        print(app.score)
+
+    
     for enemy in app.enemies:
-        
+        if enemy.drawing.hitsShape(app.player.drawing):
+            app.GameOver = True
+            print("Game Over")
+            return
+
         enemy.move(app.player, app.enemies)
 
     app.player.move()
@@ -229,6 +252,8 @@ def main():
     app.objective = Objective()
     app.player = Player(200, 200)
     app.enemies = []
+    app.score = 0
+    app.GameOver = False
 
     for i in range(2):
         app.enemies.append(Enemey())
