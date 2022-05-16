@@ -1,7 +1,22 @@
+from cmath import rect
 from cmu_graphics import *
 import time
 # Fill me in!
 
+class Game(object):
+    def __init__(self):
+        self.game_over = False
+        self.player_score = 0
+        self.score_label = Label(f"Score: {self.player_score}", 40, 25, fill="white", size=20)
+        
+    def show_game_over(self):
+        self.game_over_screen = Group(
+            Rect(0, 0, 400, 400),
+            Label("Game Over", 200, 200, size=50, fill="red"),
+            Label(f"You got {self.player_score} points", 200, 235, size=25, fill="red")
+        )
+        self.game_over_screen.toFront()
+        
 
 
 class SpecialObject(object):
@@ -61,9 +76,10 @@ class SpecialObject(object):
 
 class Objective(SpecialObject):
     def __init__(self):
-        self.xPos = randrange(0, 400)
-        self.yPos = randrange(0, 400)
         self.r = 12.5
+        self.xPos = randrange(0 + rounded(self.r), 400 - rounded(self.r))
+        self.yPos = randrange(0 + rounded(self.r), 400 - rounded(self.r))
+        
 
         drawing = Group(
             Star(self.xPos, self.yPos, self.r, 5, fill="gold")
@@ -74,8 +90,8 @@ class Objective(SpecialObject):
         self.update()
     
     def newPos(self):
-        self.xPos = randrange(0, 400)
-        self.yPos = randrange(0, 400)
+        self.xPos = randrange(0 + rounded(self.r), 400 - rounded(self.r))
+        self.yPos = randrange(0 + rounded(self.r), 400 - rounded(self.r))
 
         self.update()
 
@@ -219,6 +235,7 @@ def onStep():
     # app.player.drawing.toFront()
     if app.objective.drawing.hitsShape(app.player.drawing):
         app.score += 1
+        app.game.player_score += 1
 
         app.objective.newPos()
 
@@ -230,8 +247,8 @@ def onStep():
             #     enemy.speedY += 0.5
             #     print(enemy.speedX, enemy.speedY)
 
-            # app.player.speedX += 1awd
-
+            # app.player.speedX += 1
+        app.game.score_label.value = f"Score: {app.game.player_score}"
         print(app.score)
 
     
@@ -239,6 +256,7 @@ def onStep():
         if enemy.drawing.hitsShape(app.player.drawing):
             app.GameOver = True
             print("Game Over")
+            app.game.show_game_over()
             return
 
         enemy.move(app.player, app.enemies)
@@ -248,6 +266,7 @@ def onStep():
 
 # Initial start create player instance and enemies
 def main():
+    app.game = Game()
     app.background = rgb(15, 14, 14)
     app.objective = Objective()
     app.player = Player(200, 200)
