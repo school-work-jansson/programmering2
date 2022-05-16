@@ -1,4 +1,3 @@
-from cmath import rect
 from cmu_graphics import *
 import time
 # Fill me in!
