@@ -1,3 +1,5 @@
+from ast import Del
+from this import d
 from cmu_graphics import *
 import time
 # Fill me in!
@@ -7,12 +9,45 @@ class Game(object):
         self.game_over = False
         self.player_score = 0
         self.score_label = Label(f"Score: {self.player_score}", 40, 25, fill="white", size=20)
-        
+
+        self.stars = Group()
+
+        for t in range(150):
+            r = randrange(1, 3)
+            x = randrange(0 + r, 400-r)
+            y = randrange(0 + r, 400-r)
+            opac = randrange(0, 100)
+
+            c = Circle(x, y, r, opacity=opac,fill="white")
+            self.stars.add(c)
+    
+    def animate(self):
+        for star in self.stars:
+            current_opac = star.opacity
+
+            if current_opac <= 25:
+                print("0 opacity")
+                star.opacity = randrange(current_opac, current_opac + 30)
+                continue
+            # change_val = 2
+
+            change_val = randrange(-1, 1) 
+
+            print(current_opac, current_opac - change_val, current_opac + change_val)
+
+            if current_opac + change_val >= 100:
+                change_val = 0
+            elif current_opac + change_val <= 0:
+                change_val = abs(change_val)
+
+            star.opacity = current_opac + change_val
+
     def show_game_over(self):
         self.game_over_screen = Group(
             Rect(0, 0, 400, 400),
             Label("Game Over", 200, 200, size=50, fill="red"),
-            Label(f"You got {self.player_score} points", 200, 235, size=25, fill="red")
+            Label(f"You got {self.player_score} points", 200, 235, size=25, fill="red"),
+            Label("Press R to restart", 200, 260, size=15, fill="RED")
         )
         self.game_over_screen.toFront()
         
@@ -179,8 +214,8 @@ class Enemey(SpecialObject):
                     # Add delay from moving to player if they collide
                     self.last_hit = time.time()
 
+                    # Update display
                     self.update()
-                # Print distance between the enemy
 
         # if the enemies has hit eachother it shouldnt follow the player for 2 seconds
         if time.time() - self.last_hit <= 2:
@@ -213,22 +248,41 @@ class Enemey(SpecialObject):
 
 
 def onKeyHold(keys):
-    if "W" in keys or "w" in keys:
+    if app.game.game_over and ("R" in keys or "r" in keys):
+        print("restart")
+
+        # Clears global canvas
+        app.group.clear()
+        
+        # Redefine all variables
+        main()
+
+    if "W" in keys or "w" in keys or "up" in keys:
         app.player.dir[1] = -1
 
-    if "D" in keys or "d" in keys:
+    if "D" in keys or "d" in keys or "right" in keys:
         app.player.dir[0] = 1
 
-    if "S" in keys or "s" in keys:
+    if "S" in keys or "s" in keys or "down" in keys:
         app.player.dir[1] = 1
 
-    if "A" in keys or "a" in keys:
+    if "A" in keys or "a" in keys or "left" in keys:
         app.player.dir[0] = -1
 
+def onKeyPress(key):
+    if app.game.game_over and ("R" == key or "r" == key):
+        print("restart")
+
+        # Clears global canvas
+        app.group.clear()
+        
+        # Redefine all variables
+        main()
 
 
 def onStep():
-    if app.GameOver:
+    # Game loop
+    if app.game.game_over:
         return
 
     # app.player.drawing.toFront()
@@ -238,22 +292,16 @@ def onStep():
 
         app.objective.newPos()
 
+        # Every 10 points add a enemey
         if app.score % 10 == 0:
             app.enemies.append(Enemey())
-
-            # for enemy in app.enemies:
-            #     enemy.speedX += 0.5
-            #     enemy.speedY += 0.5
-            #     print(enemy.speedX, enemy.speedY)
-
-            # app.player.speedX += 1
+       
         app.game.score_label.value = f"Score: {app.game.player_score}"
-        print(app.score)
 
     
     for enemy in app.enemies:
         if enemy.drawing.hitsShape(app.player.drawing):
-            app.GameOver = True
+            app.game.game_over = True
             print("Game Over")
             app.game.show_game_over()
             return
@@ -261,10 +309,12 @@ def onStep():
         enemy.move(app.player, app.enemies)
 
     app.player.move()
+    app.game.animate()
 
 
 # Initial start create player instance and enemies
 def main():
+    # Define game stuff
     app.game = Game()
     app.background = rgb(15, 14, 14)
     app.objective = Objective()
