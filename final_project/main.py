@@ -21,7 +21,7 @@ class Game(object):
             c = Circle(x, y, r, opacity=opac,fill="white")
             self.stars.add(c)
     
-    def animate(self):
+    def animate_stars(self):
         for star in self.stars:
             current_opac = star.opacity
 
@@ -33,7 +33,7 @@ class Game(object):
 
             change_val = randrange(-1, 1) 
 
-            print(current_opac, current_opac - change_val, current_opac + change_val)
+            # print(current_opac, current_opac - change_val, current_opac + change_val)
 
             if current_opac + change_val >= 100:
                 change_val = 0
@@ -279,11 +279,13 @@ def onKeyPress(key):
         # Redefine all variables
         main()
 
-
+app.numOfSteps = 0
 def onStep():
     # Game loop
     if app.game.game_over:
         return
+
+    app.numOfSteps += 1
 
     # app.player.drawing.toFront()
     if app.objective.drawing.hitsShape(app.player.drawing):
@@ -309,7 +311,9 @@ def onStep():
         enemy.move(app.player, app.enemies)
 
     app.player.move()
-    app.game.animate()
+    if app.numOfSteps % 5 == 0:
+        app.game.animate_stars()
+        app.numOfSteps = 0
 
 
 # Initial start create player instance and enemies
