@@ -26,7 +26,7 @@ class Game(object):
             current_opac = star.opacity
 
             if current_opac <= 25:
-                print("0 opacity")
+                # print("0 opacity")
                 star.opacity = randrange(current_opac, current_opac + 30)
                 continue
             # change_val = 2
@@ -247,29 +247,77 @@ class Enemey(SpecialObject):
         self.update()
 
 
+app.directionKeys = {
+    "up":    ["W", "w", "up"],
+    "down":  ["S", "s", "down"],
+    "left":  ["A", "a", "left"],
+    "right": ["D", "d", "right"],
+}
+
 def onKeyHold(keys):
-    if app.game.game_over and ("R" in keys or "r" in keys):
-        print("restart")
+    if any(direction in keys for direction in app.directionKeys["up"]):
+        # app.player.dir[1] = -1
+        if any(direction in keys for direction in app.directionKeys["left"]):
+            app.player.dir = [-1, -1]
+            # print("multi press up left")
+        elif any(direction in keys for direction in app.directionKeys["right"]):
+            app.player.dir = [1, -1]
+            # print("multi press up right")
+        else:
+            app.player.dir = [0, -1]
+    
+    elif any(direction in keys for direction in app.directionKeys["down"]):
+        # app.player.dir[1] =  1
+        if any(direction in keys for direction in app.directionKeys["left"]):
+            app.player.dir = [-1, 1]
+            # print("multi press down left")
+        elif any(direction in keys for direction in app.directionKeys["right"]):
+            app.player.dir = [1, 1]
+            # print("multi press down right")
+        else:
+            app.player.dir = [0, 1]
 
-        # Clears global canvas
-        app.group.clear()
-        
-        # Redefine all variables
-        main()
+    elif any(direction in keys for direction in app.directionKeys["left"]):
+        app.player.dir = [-1, 0]
 
-    if "W" in keys or "w" in keys or "up" in keys:
-        app.player.dir[1] = -1
+    elif any(direction in keys for direction in app.directionKeys["right"]):
+        app.player.dir = [1, 0]
 
-    if "D" in keys or "d" in keys or "right" in keys:
-        app.player.dir[0] = 1
+            
+    # if "W" in keys or "w" in keys or "up" in keys:
+    #     app.player.dir = [0, -1]
 
-    if "S" in keys or "s" in keys or "down" in keys:
-        app.player.dir[1] = 1
+    
+    # if "S" in keys or "s" in keys or "down" in keys:
+    #     app.player.dir = [0, 1]
 
-    if "A" in keys or "a" in keys or "left" in keys:
-        app.player.dir[0] = -1
+    # if "D" in keys or "d" in keys or "right" in keys:
+    #     # app.player.dir[0] = 1
+    #     app.player.dir = [1, 0]
+
+    # if "A" in keys or "a" in keys or "left" in keys:
+    #     # app.player.dir[0] = -1
+    #     app.player.dir = [-1, 0]
+
+    # if "W" in keys or "w" in keys or "up" in keys:
+    #     # app.player.dir[1] = -1
+    #     if "A" in keys or "a" in keys or "left" in keys:
+    #         app.player.dir = [-1, -1]
+    #     elif "D" in keys or "d" in keys or "right" in keys:
+    #         app.player.dir = [1, -1]
+
+
+    # elif "S" in keys or "s" in keys or "down" in keys:
+    #     # app.player.dir[1] = 1
+    #     if "A" in keys or "a" in keys or "left" in keys:
+    #         app.player.dir = [-1, 1]
+    #     elif "D" in keys or "d" in keys or "right" in keys:
+    #         app.player.dir = [1, 1]
+
+
 
 def onKeyPress(key):
+
     if app.game.game_over and ("R" == key or "r" == key):
         print("restart")
 
@@ -278,6 +326,9 @@ def onKeyPress(key):
         
         # Redefine all variables
         main()
+
+    if key == "escape":
+        exit()
 
 app.numOfSteps = 0
 def onStep():
@@ -295,7 +346,7 @@ def onStep():
         app.objective.newPos()
 
         # Every 10 points add a enemey
-        if app.score % 10 == 0:
+        if app.score % 10 == 0 or app.score == 5:
             app.enemies.append(Enemey())
        
         app.game.score_label.value = f"Score: {app.game.player_score}"
@@ -323,12 +374,9 @@ def main():
     app.background = rgb(15, 14, 14)
     app.objective = Objective()
     app.player = Player(200, 200)
-    app.enemies = []
+    app.enemies = [Enemey()]
     app.score = 0
     app.GameOver = False
-
-    for i in range(2):
-        app.enemies.append(Enemey())
 
 main()
 
